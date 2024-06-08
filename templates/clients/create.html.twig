@@ -1,0 +1,22 @@
+{#TEMPLATE TABLE CLIENTS#}
+{# @var clientDTO \Domain\DTO\ClientDTO #}
+
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h2> Agregar Cliente</h2>
+    <form action="{{ path('save_create_client') }}" method="post">
+        <div class="row">
+            <div class="col-md-6 mt-3">
+                <div class="form-group">
+                    <label for="create_name">Nombre:</label>
+                    <input name="name" class="form-control" id="create_name" required>
+                </div>
+            </div>
+        </div>
+        <div class="float-right mt-5">
+            <button type="submit" class="btn-primary">Guardar</button>
+        </div>
+    </form>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{#TEMPLATE TABLE ORDERS#}
+{# @var orderCollection \Domain\Collections\OrderCollection #}
+
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h2> Historial de pedidos</h2>
+    <div class="row mt-5">
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total de pedidos</h5>
+                    <p class="card-text">{{ orderCollection.totalOrders }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Pedidos completados</h5>
+                    <div class="card-text text-success">{{ orderCollection.totalOrdersCompleted }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Pedidos pendientes</h5>
+                    <div class="card-text text-success">{{ orderCollection.totalOrdersPendingCompletion }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tipos de Pedidos</h5>
+                    <div class="card-text text-success">
+                        <div class="row">
+                            <div class="col-sm-6">
+                              Compras:  {{ orderCollection.totalOrdersByBuyType }}
+                            </div>
+                            <div class="col-sm-6">
+                              Ventas:  {{ orderCollection.totalOrdersBySellType }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5">
+        <table class="table table-striped" id="finizens-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre de cartera</th>
+                    <th>Tipo de pedido</th>
+                    <th>Asignaciones</th>
+                    <th>Acciones</th>
+                    <th>fecha de creación</th>
+                    <th>fecha finalizada</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                    {% for order in orderCollection.orderDTOCollection %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ order.portfolioName }}</td>
+                        <td>{{ order.type|trans }}</td>
+                        <td>{{ order.allocationId }}</td>
+                        <td>{{ order.shares }}</td>
+                        <td>{{ order.createdAt | date('d/m/Y') }}</td>
+                        <td>{% if order.completedAt is not null %}{{ order.completedAt | date('d/m/Y') }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
