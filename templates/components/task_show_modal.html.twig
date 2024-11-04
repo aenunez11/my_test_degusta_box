@@ -1,0 +1,25 @@
+<div class="modal fade" id="showTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="showTaskModalLabel{{ task.id }}" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="showTaskModalLabel{{ task.id }}">{{ task.name }}</h5>
+                <button type="button" class="btn-close closeButton" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-top: 30px;">
+                    {% if task.status == true %}
+                        <i class="fas fa-stop-circle fa-5x"></i>
+                    {% else %}
+                        <i class="fas fa-play-circle fa-5x"></i>
+                    {% endif %}
+                </div>
+                <div style="text-align: center; margin-top: 30px;">
+                    <h6>Tiempo transcurrido: <span id="timerDisplay{{ task.id }}">{{ task.duration }}</span></h6>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary closeButton">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

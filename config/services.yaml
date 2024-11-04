@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    images_directory: '%kernel.project_dir%/public/uploads/images'
 
 services:
     # default configuration for services in *this* file
@@ -33,7 +34,18 @@ services:
         tags: ['doctrine.repository_service']
 
     # Auto-wiring all domain services
-    Domain\Services\:
-        resource: '../src/Domain/Services'
+    Application\Service\:
+        resource: '../src/Application/Service'
         autowire: true
         public: true
+
+    Domain\Port\TaskManagerInterface: '@App\Infrastructure\Service\TaskManager'
+
+
+    App\Infrastructure\Service\TaskManager:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+
+    Application\Command\TaskCommand:
+        tags:
+            - { name: 'console.command', command: 'task:action' }

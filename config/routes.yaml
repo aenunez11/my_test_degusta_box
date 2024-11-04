@@ -1,47 +1,11 @@
-home:
+tasks:
   path: /
-  controller: App\Controller\HomeController::index
+  controller: App\Infrastructure\Controller\TaskController::getAllTasks
 
-list_clients:
-  path: /clients
-  controller: App\Controller\ClientController::getAllClients
-  
-show_client:
-  path: /client/show/{uidentifier}
-  controller: App\Controller\ClientController::getShowClient
+start_task:
+  path: /task/start
+  controller: App\Infrastructure\Controller\TaskController::getStartTask
 
-update_client:
-  path: /client/update/{uidentifier}
-  controller: App\Controller\ClientController::getUpdateClient
-
-delete_client:
-  path: /client/delete/{uidentifier}
-  controller: App\Controller\ClientController::getDeleteClient
-
-create_client:
-  path: /client/create
-  controller: App\Controller\ClientController::createClient
-
-save_create_client:
-  path: /client/add-client
-  controller: App\Controller\ClientController::saveCreateClient
-
-show_client_portfolios:
-  path: /client/show-portfolios/{uidentifier}
-  controller: App\Controller\ClientController::getShowPortfolioByClient
-
-client_create_portfolio:
-  path: /client/create-portfolio/{uidentifier}
-  controller: App\Controller\ClientController::getCreatePortfolioByClient
-
-client_create_order:
-  path: /client/create-order/{uidentifier}
-  controller: App\Controller\ClientController::getCreateOrderByPortfolio
-
-delete_portfolio:
-  path: /client/delete-portfolio/{uidentifier}
-  controller: App\Controller\ClientController::getDeletePortfolio
-
-list_orders:
-  path: /orders
-  controller: App\Controller\OrderController::getAllOrders
+end_task:
+  path: /task/end
+  controller: App\Infrastructure\Controller\TaskController::getEndTask

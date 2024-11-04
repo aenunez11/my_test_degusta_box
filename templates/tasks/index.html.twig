@@ -1,0 +1,210 @@
+{#TEMPLATE TABLE Tasks#}
+{# @var taskCollection \Domain\Collection\TaskCollection #}
+
+{% extends "base.html.twig" %}
+
+{% block style_extra %}
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <div class="row mt-5">
+        <div class="col-12 col-sm-6 col-md-2 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total de tareas</h5>
+                    <p class="card-text">{{ taskCollection.totalTasks }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-2 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Tiempo</h5>
+                    <p class="card-text">{{ taskCollection.totalTime }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-2 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tareas de hoy</h5>
+                    <p class="card-text">{{ taskCollection.totalTasksToday }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-2 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tiempo de hoy</h5>
+                    <p class="card-text">{{ taskCollection.totalTimeToday }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-2 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tareas en proceso</h5>
+                    <p class="card-text">{{ taskCollection.activeTodayTasks | length }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="d-flex justify-content-between align-items-center mt-5">
+        <h2 class="d-inline">Tareas</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#startTaskModal">Iniciar/Detener Tarea</button>
+    </div>
+
+    <div class="mt-5">
+        <div class="table-responsive">
+            <table class="table table-striped" id="task-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tareas</th>
+                    <th>Fecha</th>
+                    <th>Resumen de tiempo</th>
+                    <th>Estado</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set count = 1 %}
+                {% for taskDate, tasks in taskCollection.all %}
+                    {% for task in tasks %}
+                        <tr data-task-id="{{ task.id }}" data-duration="{{ task.duration }}">
+                            <td>{{ count }}</td>
+                            <td>{{ task.name }}</td>
+                            <td>{{ taskDate | date('d-m-Y') }}</td>
+                            <td class="duration" id="duration-{{ task.id }}" data-total-time="{{ task.totalTime }}">{{ task.duration }}</td>
+                            <td>
+                                {% if taskDate == "now" | date('Y-m-d') %}
+                                    {% if task.status == true %}
+                                        <span class="badge bg-success">En proceso</span>
+                                    {% else %}
+                                        <span class="badge bg-info">En pausa</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">Completada</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% set count = count + 1 %}
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    {% include 'components/task_create_modal.html.twig' %}
+
+{% endblock %}
+
+{% block javascripts_extra %}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            let timer;
+            let seconds = 0;
+            let taskName = '';
+
+            function formatTime(seconds) {
+                const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                return `${hours}:${minutes}:${secs}`;
+            }
+
+            $('#startButton').on('click', function() {
+                taskName = $('#taskName').val();
+                let url = $(this).data('url');
+                if (taskName) {
+
+                    $.ajax({
+                        method: "POST",
+                        url: url,
+                        dataType: 'json',
+                        data: { name: taskName }
+                    }).done(function (response) {
+                        console.log('Tarea iniciada:', response);
+                        seconds = response.time;
+                        $('#timer').text(formatTime(seconds));
+                        $('#startButton').addClass('d-none');
+                        $('#stopButton').removeClass('d-none');
+                        timer = setInterval(function() {
+                            seconds++;
+                            $('#timerDisplay').text(formatTime(seconds));
+                        }, 1000);
+
+                        $('#stopButton').data('taskId',response.taskId);
+                    });
+
+                } else {
+                    alert('Por favor, ingrese un nombre de tarea.');
+                }
+            });
+
+            $('#stopButton').on('click', function() {
+                clearInterval(timer);
+                $('#startButton').removeClass('d-none');
+                $('#stopButton').addClass('d-none');
+
+                let url = $(this).data('url'),
+                    taskId = $(this).data('taskId');
+
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    dataType: 'json',
+                    data:  {taskId: taskId }
+                }).done(function (response) {
+
+                });
+
+            });
+
+
+            $('.closeButton').on('click', function() {
+                document.location.reload();
+            });
+
+            let timers = {};
+
+            function formatTime(seconds) {
+                const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                return `${hours}:${minutes}:${secs}`;
+            }
+
+            $('#task-table tbody tr').each(function () {
+                const taskId = $(this).data('task-id');
+                const totalTime = $(this).find('.duration').data('total-time');
+                const statusBadge = $(this).find('td:last-child .badge');
+
+
+                if (statusBadge.hasClass('bg-success')) {
+                    let elapsedSeconds = totalTime;
+                    timers[taskId] = setInterval(() => {
+                        elapsedSeconds++;
+                        $(this).find('.duration').text(formatTime(elapsedSeconds));
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+{% endblock %}
+

@@ -1,0 +1,26 @@
+<div class="modal fade" id="startTaskModal" tabindex="-1" aria-labelledby="startTaskModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="startTaskModalLabel">Iniciar/Detener Tarea</h5>
+                <button type="button" class="btn-close closeButton" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="taskName" class="form-label">Tarea</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="taskName" placeholder="Ingrese el nombre de la tarea">
+                        <button id="startButton" class="btn btn-success" data-url="{{ path('start_task') }}">Iniciar</button>
+                        <button id="stopButton" class="btn btn-danger d-none" data-url="{{ path('end_task') }}" data-task-id="">Detener</button>
+                    </div>
+                </div>
+                <div>
+                    <h6>Tiempo transcurrido: <span id="timerDisplay">00:00:00</span></h6>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary closeButton">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
