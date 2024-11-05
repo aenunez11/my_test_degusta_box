@@ -36,25 +36,22 @@ private  $taskService;
      */
     public function getStartTask(Request $request): Response
     {
-        $parameters = $this->getPostParameters($request);
+        $parameters = $request->request->all();
         $taskName = $parameters['name'] ?? '';
 
-        if ($taskName) {
-            $taskDTO = $this->taskService->startTask($taskName);
-            $time = $this->taskService->getTotalTimeForToday($taskName);
-
-            return $this->returnJsonAjaxResponse([
-                'status' => 'success',
-                'task' => $taskDTO->getName(),
-                'taskId' => $taskDTO->getId(),
-                'time' => $time
-            ]);
-
+        if (!$taskName) {
+            return $this->returnJsonAjaxResponse(['status' => 'error', 'message' => 'Invalid task name']);
         }
 
-        return $this->returnJsonAjaxResponse(['status' => 'error', 'message' => 'Invalid task name']);
+        $taskDTO = $this->taskService->startTask($taskName);
+        $time = $this->taskService->getTotalTimeForToday($taskName);
 
-
+        return $this->returnJsonAjaxResponse([
+            'status' => 'success',
+            'task' => $taskDTO->getName(),
+            'taskId' => $taskDTO->getId(),
+            'time' => $time
+        ]);
     }
 
     /**
@@ -63,7 +60,7 @@ private  $taskService;
      */
     public function getEndTask(Request $request): Response
     {
-        $parameters = $this->getPostParameters($request);
+        $parameters = $request->request->all();
         $taskId = $parameters['taskId'] ?? '';
         if (!$taskId) {
             return $this->returnJsonAjaxResponse(['error' => 'Task ID No found']);
@@ -77,7 +74,6 @@ private  $taskService;
     }
 
     /**
-     * Return response for ajax request in json
      * @param $value
      * @return Response
      */
@@ -87,25 +83,5 @@ private  $taskService;
         $response->setContent(json_encode($value, JSON_THROW_ON_ERROR));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
-    }
-
-    /**
-     * Get Post Parameters
-     * @param Request $request
-     * @param string|null $parameterName
-     * @param mixed|null $default
-     * @param bool $emptyToNull
-     * @return array|mixed|null (if the value does not exist)
-     */
-    protected function getPostParameters(Request $request, ?string $parameterName = null, $default = null, bool $emptyToNull = false)
-    {
-        if (is_null($parameterName)) {
-            return $request->request->all();
-        }
-        $result = $request->get($parameterName, $default);
-        if ($emptyToNull && empty($result)) {
-            return null;
-        }
-        return $result;
     }
 }

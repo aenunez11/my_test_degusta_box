@@ -14,9 +14,11 @@
                         <button id="stopButton" class="btn btn-danger d-none" data-url="{{ path('end_task') }}" data-task-id="">Detener</button>
                     </div>
                 </div>
-                <div>
+                <div id="box-time" style="display: none;">
                     <h6>Tiempo transcurrido: <span id="timerDisplay">00:00:00</span></h6>
                 </div>
+                <div id="loading" style="display: none;">Iniciando...</div>
+                <div id="loading-end" style="display: none;">Deteniendo...</div>
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary closeButton">Cerrar</button>

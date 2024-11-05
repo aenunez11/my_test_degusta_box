@@ -117,35 +117,33 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            let timer;
-            let seconds = 0;
-            let taskName = '';
-
-            function formatTime(seconds) {
-                const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
-                const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-                const secs = String(seconds % 60).padStart(2, '0');
-                return `${hours}:${minutes}:${secs}`;
-            }
+            let timer,
+                seconds = 0,
+                taskName = '',
+                timers = {};
 
             $('#startButton').on('click', function() {
+
                 taskName = $('#taskName').val();
                 let url = $(this).data('url');
                 if (taskName) {
-
+                    $('#box-time').hide();
+                    $('#loading-end').hide();
+                    $('#loading').show();
                     $.ajax({
                         method: "POST",
                         url: url,
                         dataType: 'json',
                         data: { name: taskName }
                     }).done(function (response) {
-                        console.log('Tarea iniciada:', response);
                         seconds = response.time;
                         $('#timer').text(formatTime(seconds));
-                        $('#startButton').addClass('d-none');
-                        $('#stopButton').removeClass('d-none');
                         timer = setInterval(function() {
                             seconds++;
+                            $('#loading').hide();
+                            $('#box-time').show();
+                            $('#startButton').addClass('d-none');
+                            $('#stopButton').removeClass('d-none');
                             $('#timerDisplay').text(formatTime(seconds));
                         }, 1000);
 
@@ -159,36 +157,28 @@
 
             $('#stopButton').on('click', function() {
                 clearInterval(timer);
-                $('#startButton').removeClass('d-none');
-                $('#stopButton').addClass('d-none');
-
                 let url = $(this).data('url'),
                     taskId = $(this).data('taskId');
-
+                $('#box-time').hide();
+                $('#loading').hide();
+                $('#loading-end').show();
                 $.ajax({
                     method: "POST",
                     url: url,
                     dataType: 'json',
                     data:  {taskId: taskId }
                 }).done(function (response) {
-
+                    $('#startButton').removeClass('d-none');
+                    $('#stopButton').addClass('d-none');
+                    $('#loading-end').hide();
+                    $('#box-time').show();
                 });
 
             });
 
-
             $('.closeButton').on('click', function() {
                 document.location.reload();
             });
-
-            let timers = {};
-
-            function formatTime(seconds) {
-                const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
-                const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-                const secs = String(seconds % 60).padStart(2, '0');
-                return `${hours}:${minutes}:${secs}`;
-            }
 
             $('#task-table tbody tr').each(function () {
                 const taskId = $(this).data('task-id');
@@ -204,6 +194,14 @@
                     }, 1000);
                 }
             });
+
+            function formatTime(seconds) {
+                const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                return `${hours}:${minutes}:${secs}`;
+            }
+
         });
     </script>
 {% endblock %}

@@ -21,6 +21,14 @@ private  $tasks = [];
     }
 
     /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->tasks;
+    }
+
+    /**
      * @return TaskDTO[]
      */
     public function getAll(): array
@@ -168,12 +176,4 @@ private  $tasks = [];
     {
         return $this->getGroupedTasksByDate(false);
     }
-
-
-
-    public function toArray(): array
-    {
-        return $this->tasks;
-    }
-
 }
